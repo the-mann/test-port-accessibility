@@ -1,0 +1,43 @@
+name: Test Outgoing Ports Accessibility
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  port_test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Test ports between 1 and 1000
+      run: |
+        # Define the target server and range of ports
+        TARGET="portquiz.net"
+        START_PORT=1
+        END_PORT=1000
+
+        echo "Testing ports from $START_PORT to $END_PORT..."
+
+        # Loop through the port range and check connectivity
+        for PORT in $(seq $START_PORT $END_PORT); do
+          echo "Testing port $PORT..."
+          # Check if the port is accessible using netcat (nc)
+          if nc -zv -w 3 $TARGET $PORT 2>&1 | grep -q "succeeded"; then
+            echo "::notice::Port $PORT is accessible."  # Annotate successful ports as a notice
+          else
+            echo "::error::Port $PORT is not accessible."  # Annotate failed ports as an error
+          fi
+        done
+
+    - name: Upload results
+      uses: actions/upload-artifact@v2
+      with:
+        name: port-test-results
+        path: test-results.log

@@ -20,8 +20,8 @@ jobs:
       run: |
         # Define the target server and range of ports
         TARGET="portquiz.net"
-        START_PORT=1
-        END_PORT=1000
+        START_PORT=5984
+        END_PORT=5986
 
         echo "Testing ports from $START_PORT to $END_PORT..."
 
